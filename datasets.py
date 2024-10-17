@@ -1,4 +1,4 @@
-import numpy as np
+imgimport numpy as np
 import pandas as pd
 import torch
 
@@ -53,6 +53,35 @@ def dino_dataset(n=8000):
     X = np.stack((x, y), axis=1)
     return TensorDataset(torch.from_numpy(X.astype(np.float32)))
 
+def homer_dataset(n=8000):
+    
+    df = pd.read_csv("static/homer.tsv", sep="\t")
+    rng = np.random.default_rng(42)
+    ix = rng.integers(0, len(df), n)
+    x = df["x"].iloc[ix].tolist()
+    x = np.array(x) + rng.normal(size=len(x)) * 0.01
+    y = df["y"].iloc[ix].tolist()
+    y = np.array(y) + rng.normal(size=len(x)) * 0.01
+    x = (x/54 - 1) * 4
+    y = (y/48 - 1) * 4
+    X = np.stack((x, y), axis=1)
+    return TensorDataset(torch.from_numpy(X.astype(np.float32)))
+    
+
+def ising_dataset(n=100000):
+    
+    df = pd.read_csv("static/ising.tsv", sep="\t")
+    n = df.shape[0]
+    rng = np.random.default_rng(42)
+    ix = rng.integers(0, len(df), n)
+    x = df["x"].iloc[ix].tolist()
+    x = np.array(x) + rng.normal(size=len(x)) * 0.01
+    y = df["y"].iloc[ix].tolist()
+    y = np.array(y) + rng.normal(size=len(x)) * 0.01
+    x = (x/54 - 1) * 4
+    y = (y/48 - 1) * 4
+    X = np.stack((x, y), axis=1)
+    return TensorDataset(torch.from_numpy(X.astype(np.float32)))
 
 def get_dataset(name, n=8000):
     if name == "moons":
@@ -63,5 +92,9 @@ def get_dataset(name, n=8000):
         return line_dataset(n)
     elif name == "circle":
         return circle_dataset(n)
+    elif name == "homer":
+        return homer_dataset(n)
+    elif name == "ising":
+        return ising_dataset(n)
     else:
         raise ValueError(f"Unknown dataset: {name}")
